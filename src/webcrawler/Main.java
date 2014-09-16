@@ -17,7 +17,7 @@ public class Main {
 	 */
 	public static void main(String[] args) throws MalformedURLException {
 		WebCrawler crawler = new WebCrawler();
-/*
+		/*
         if (args.length != 2 || args[0] == null || args[1] == null){
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Missing arguments");
@@ -30,7 +30,7 @@ public class Main {
             } catch (IOException e) {
             }
         }
-*/
+		*/
 		URL url = new URL("http://fmi.wikidot.com");
 		List<String> path = crawler.crawl(url, "Докажете, че:");
 		System.out.println("result :" + path.toString());

@@ -11,15 +11,16 @@ import java.util.List;
  * @author Svetoslav
  */
 public class Link {
+
 	private final URL url;
 	private final List<String> history = new LinkedList();
 
-	Link(URL context, String url, List<String> history) throws MalformedURLException{
+	Link(URL context, String url, List<String> history) throws MalformedURLException {
 		this.url = new URL(context, url);
 		this.history.addAll(history);
 		this.history.add(url);
 	}
-	
+
 	Link(URL url) {
 		this.url = url;
 		this.history.add(url.toString());
@@ -47,7 +48,7 @@ public class Link {
 	public boolean equals(Object obj) {
 		return url.toString().equals(obj.toString());
 	}
-	
+
 	URL getUrl() {
 		return url;
 	}
@@ -57,9 +58,9 @@ public class Link {
 	}
 
 	void printHistory() {
-		for(String s : history){
+		for (String s : history) {
 			System.out.println(s);
 		}
 	}
-	
+
 }

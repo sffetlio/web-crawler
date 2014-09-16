@@ -11,8 +11,9 @@ import java.util.regex.Pattern;
  * @author Svetoslav
  */
 public class CrawlerThread implements Runnable {
+
 	private final WebCrawler crawler;
-	
+
 	private final static Pattern hrefPattern = Pattern.compile("href=\"(.*?)\"", Pattern.DOTALL);
 
 	public CrawlerThread(WebCrawler crawler) {
@@ -21,13 +22,13 @@ public class CrawlerThread implements Runnable {
 
 	@Override
 	public void run() {
-        while (crawler.isWorking() && !Thread.currentThread().isInterrupted()) {
+		while (crawler.isWorking() && !Thread.currentThread().isInterrupted()) {
 			try {
 				Link u = crawler.getUrlsToProcess().take();
 				crawler.workingThreads++;
-				
+
 				Link l = processUrl(u);
-				if(l != null){
+				if (l != null) {
 					// stop processing and exit
 					crawler.getUrlsToProcess().clear();
 					crawler.setResult(l);
@@ -37,48 +38,48 @@ public class CrawlerThread implements Runnable {
 				break;
 			}
 			crawler.workingThreads--;
-        }
+		}
 	}
-	
-	public Link processUrl(Link url){
-        System.out.println(Thread.currentThread().getName()+" processing: "+url);
-        crawler.getUrlsProcessed().add(url);
 
-        String inputLine;
-        StringBuilder pageContent = new StringBuilder();
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-            while ((inputLine = in.readLine()) != null)
-                pageContent.append(inputLine);
+	public Link processUrl(Link url) {
+//		System.out.println(Thread.currentThread().getName() + " processing: " + url);
+		crawler.getUrlsProcessed().add(url);
 
-            String contentStr = pageContent.toString();
-            if (contentStr.contains(crawler.getNeedle())){
-                return url;
-            }
+		String inputLine;
+		StringBuilder pageContent = new StringBuilder();
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+			while ((inputLine = in.readLine()) != null) {
+				pageContent.append(inputLine);
+			}
 
-            findLinks(contentStr, url);
+			String contentStr = pageContent.toString();
+			if (contentStr.contains(crawler.getNeedle())) {
+				return url;
+			}
 
-        } catch (MalformedURLException e) {
+			findLinks(contentStr, url);
+
+		} catch (MalformedURLException e) {
 //            System.out.println("MalformedURLException: "+url);
-            return null;
-        } catch (IOException e) {
+			return null;
+		} catch (IOException e) {
 //            System.out.println("IOException: " + url);
-            return null;
-        }
-        return null;
-    }
+			return null;
+		}
+		return null;
+	}
 
-    private void findLinks(String html, Link currentUrl){
-        Matcher m = hrefPattern.matcher(html);
+	private void findLinks(String html, Link currentUrl) {
+		Matcher m = hrefPattern.matcher(html);
 
-        while (m.find())
-        {
-            try {
-                crawler.addForProcessing(new Link(crawler.getStartUrl().getUrl(), m.group(1), currentUrl.getHistory()));
-            } catch (MalformedURLException e) {
+		while (m.find()) {
+			try {
+				crawler.addForProcessing(new Link(crawler.getStartUrl().getUrl(), m.group(1), currentUrl.getHistory()));
+			} catch (MalformedURLException e) {
 //				System.out.println("MalformedURLException: "+m.group(1));
-            }
-        }
-    }
-	
+			}
+		}
+	}
+
 }
